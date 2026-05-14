@@ -50,8 +50,8 @@ VALIDATE(){
 print_time(){
 
     END_TIME=$(date +%s)
-    TOTAL_TIME=$(($END_TIME-$START_TIME))
+    TOTAL_TIME=$(($END_TIME - $START_TIME))
 
     echo -e "Time taken to execute script is $Y $TOTAL_TIME .... seconds$N"
-    
+
 }
