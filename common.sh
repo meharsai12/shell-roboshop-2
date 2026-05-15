@@ -43,8 +43,60 @@ VALIDATE(){
 }
 
 
+roboshop_user(){
 
+    id roboshop
+        if [ $? -ne 0 ]
+        then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop  &>>$LOG_FILE
+        VALIDATE $? "Roboshop system user creation"
+        else
+        echo -e  "The  user is already existed ..  $G SKIPPING $N  "
+        fi
+}
 
+nodejs_setup(){
+    dnf module disable nodejs -y     &>>$LOG_FILE
+    VALIDATE $? "disabling default nodejs"
+
+    dnf module enable nodejs:20 -y   &>>$LOG_FILE
+    VALIDATE $? "enabling nodejs-20"
+
+    dnf install nodejs -y   &>>$LOG_FILE
+    VALIDATE $? "installing nodejs"
+
+    npm install   &>>$LOG_FILE
+        VALIDATE $? "installing dependencies"
+}
+
+app_setup(){
+        mkdir -p  /app  
+        VALIDATE $? "Creating app directory"
+
+        curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip  &>>$LOG_FILE
+        VALIDATE $? "downloading the $app_name zip file to temp folder"
+
+        rm -rf /app/*     &>>$LOG_FILE
+        cd /app      &>>$LOG_FILE
+        VALIDATE $? "Navigating to app folder"
+        
+        unzip /tmp/$app_name.zip  &>>$LOG_FILE
+        VALIDATE $? "Unzipping the catalogue zip file here"
+
+        
+
+}
+
+systemd_setup(){
+        systemctl daemon-reload   &>>$LOG_FILE
+    VALIDATE $? "$app_name daemon-reload"
+
+    systemctl enable $app_name   &>>$LOG_FILE
+    VALIDATE $? " enabling $app_name service"
+
+    systemctl start $app_name  &>>$LOG_FILE
+    VALIDATE $? "starting $app_name service"
+}
 
 
 
